@@ -13,6 +13,7 @@ app.use(
 app.use(express.json());
 require("./dbSetup")();
 require("./passportConfig")(passport);
+app.use("/images/", express.static("uploads/images"));
 app.use(routes);
 app.use(function (error, request, response, next) {
   try {

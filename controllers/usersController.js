@@ -1,36 +1,52 @@
 const { db } = require("../models/postgressPool");
+const jwt = require("jsonwebtoken");
+const _ = require("lodash");
 const Joi = require("joi");
 module.exports = {
   addsong: async (req, res, next) => {
     try {
-      console.log(req.body);
+      const schema = {
+        name: Joi.string().min(5).required(),
+        date_of_release: Joi.date().iso().required(),
+        artist_id: Joi.string(),
+      };
+      const artist_id = JSON.parse(req.body.artist_id);
+      const result = Joi.validate(req.body, schema);
+      if (result.error)
+        return res.status(400).send(result.error.details[0].message);
+      if (!artist_id.length)
+        return res.status(400).send("Artists Must be selected");
+      if (!req.file) return res.status(400).send("Please upload cover image");
       let data = await db.one(
         "insert into songs(name,date_of_release,cover)values($1,$2,$3) RETURNING id",
-        [req.body.name, req.body.date_of_release, req.body.cover]
+        [req.body.name, req.body.date_of_release, req.file.filename]
       );
-      console.log(data);
       let values = "";
-      for (i in req.body.artist_id) {
-        if (i == req.body.artist_id.length - 1)
-          values += `(${req.body.artist_id[i]},${data.id})`;
-        else values += `(${req.body.artist_id[i]},${data.id}),`;
+      for (i in artist_id) {
+        if (i == artist_id.length - 1) values += `(${artist_id[i]},${data.id})`;
+        else values += `(${artist_id[i]},${data.id}),`;
       }
-      console.log(values);
       await db.none(`insert into song(artist_id,song_id)values${values}`);
-      data = await db.any("select * from song");
-      res.send(data);
+      res.send("Song updated succefully.");
     } catch (error) {
       next(error);
     }
   },
   addartist: async (req, res, next) => {
     try {
-      let data = await db.any(
+      const schema = {
+        name: Joi.string().min(3).required(),
+        dob: Joi.date().iso().required(),
+        bio: Joi.string().min(10).required(),
+      };
+      const result = Joi.validate(req.body, schema);
+      if (result.error)
+        return res.status(400).send(result.error.details[0].message);
+      let data = await db.none(
         "insert into artists(name,dob,bio)values($1,$2,$3)",
         [req.body.name, req.body.dob, req.body.bio]
       );
-
-      res.send(data);
+      res.send("Artist Added successfully");
     } catch (error) {
       next(error);
     }
@@ -68,6 +84,12 @@ module.exports = {
       next(error);
     }
   },
+  getartists: async (req, res) => {
+    try {
+      const artists = await db.any("select id,name from artists");
+      res.send(artists);
+    } catch (e) {}
+  },
   gettop10songs: async (req, res, next) => {
     try {
       const songs = await db.any("select * from topsongs");
@@ -83,5 +105,20 @@ module.exports = {
     } catch (e) {
       next(error);
     }
+  },
+  getuser: async (req, res) => {
+    const token = jwt.sign(
+      _.pick(req.user, ["id", "name"]),
+      process.env.TOKEN_SECRET,
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      }
+    );
+    res.send({
+      message: "Success",
+      token,
+      name: req.user.name,
+      email: req.user.email,
+    });
   },
 };

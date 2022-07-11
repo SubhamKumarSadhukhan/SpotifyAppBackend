@@ -33,9 +33,8 @@ module.exports = {
           res.send({
             message: "Success",
             token,
-            name: user.name,
-            email: user.email,
-            admin: user.admin,
+            name: user[0].name,
+            email: user[0].email,
           });
         } else res.status(400).send("Incorrect Username or Password");
       } else res.status(400).send("Not Registred");

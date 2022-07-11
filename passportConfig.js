@@ -13,7 +13,7 @@ module.exports = (passport) => {
           jwt_payload.id,
         ]);
         return done(null, user);
-      } catch {
+      } catch (err) {
         return done(err, false);
       }
     })
