@@ -1,0 +1,427 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "spotifyappbackend"
+  },
+  "host": "temp.aqionline.in",
+  "tags": [
+    {
+      "name": "Authanication",
+      "description": "Everything about Authanication"
+    },
+    {
+      "name": "Songs",
+      "description": "Everything about Songs"
+    },
+    {
+      "name": "Artists",
+      "description": "Everything about Arists"
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/api/register": {
+      "post": {
+        "tags": [
+          "Authanication"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+             "type":"object",
+             "required": [
+              "name","email","otp","password"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Subham Sadhukhan"
+              },
+              "email": {
+                "type": "string",
+                "example": "abc@yourdomain.com"
+              },
+              "password":{
+                "type": "string",
+                "example":"4ssa4d84s8a4d4sa86d4s8a4d864sa4d"
+              }
+            }
+          }}
+        ],
+        "responses": {
+          "200": {
+            "description": "Account Registered Succefully",
+            "schema":{
+              "type":"string",
+              "example":"Success"
+            }
+          },
+          "400": {
+            "description": "Bad Request or Already Exist",
+            "schema":{
+              "type":"string"
+            }
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": [
+          "Authanication"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+             "type":"object",
+             "required": [
+              "email","password"
+            ],
+            "properties": {
+              "email": {
+                "type": "string",
+                "example": "abc@yourdomain.com"
+              },
+              "password":{
+                "type": "string",
+                "example":25
+              }
+            }
+          }}
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged in",
+            "schema":{
+              "type":"object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Success"
+                },
+                "token":{
+                  "type": "string",
+                  "example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMzllMjMyOGQzZDU3MWZmODQ2MTg4MSIsIm5hbWUiOiJTdWJoYW0gS3VtYXIgU2FkaHVraGFuIiwiaWF0IjoxNjUyMjUwOTY2LCJleHAiOjE2NTIyNTM1NTh9.hWmSyioQFosY_Ltyi-sKsCyJbxbWKlaIl5GlYLvrYHs"
+                },
+                "name":{
+                  "type": "string",
+                  "example":"Subham Sadhukhan"
+                },
+                "email":{
+                  "type": "string",
+                  "example":"abc@gmail.com"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect Username or Password",
+            "schema":{
+              "type":"string",
+              "example":"Invalid id or password"
+            }
+          }
+        }
+      }
+    },"/api/addsong": {
+      "post": {
+        "tags": [
+          "Songs"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          { "name": "Authorization", "required": true,"in": "header", "type": "string", "description": "JWT token which will be received from /api/login" },
+          {
+            "name":"name",
+            "in":"formData",
+            "type":"string",
+            "description":"Song Nmae",
+        "required": true
+          },
+          {"name": "date_of_release",
+        "in": "formData",
+        "description": "ISO Date string of release data",
+        "type": "string",
+        "example":"2022-07-11T18:25:33.084Z",
+        "required": true
+      },
+      {"name": "file",
+        "in": "formData",
+        "description": "Cover image of the song",
+        "required": true,
+        "type": "file"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Song added succefully",
+            "schema":{
+              "type":"string",
+              "example":"Song updated succefully."
+            }
+          },
+          "400": {
+            "description": "Error Details",
+            "schema":{
+              "type":"string",
+              "example":"form input error details"
+            }
+          }
+        }
+      }
+    },
+    "/api/ratesong": {
+      "post": {
+        "tags": [
+          "Songs"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          { "name": "Authorization", "required": true,"in": "header", "type": "string", "description": "JWT token which will be received from /api/login" },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+             "type":"object",
+             "required": [
+              "email","password"
+            ],
+            "properties": {
+              "song_id": {
+                "type": "number",
+                "example": 1
+              },
+              "rate":{
+                "type": "number",
+                "example":5
+              }
+            }
+          }}
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged in",
+            "schema":{
+              "type":"string",
+              "example":"Your Rate Saved"}
+          }
+        }
+      }
+    },"/api/gettop10songs": {
+      "get": {
+        "tags": [
+          "Songs"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          { "name": "Authorization", "required": true,"in": "header", "type": "string", "description": "JWT token which will be received from /api/login" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged in",
+            "schema": {
+                  "type" : "array",
+                  "items": {
+                  "type": "object",
+                  "properties":{
+                    "id":{
+                      "type":"number",
+                      "example":1
+                    },
+                    "name":{
+                      "type":"string",
+                      "example":"Good Feeling"
+                    },
+                    "date_of_release":{
+                      "type":"string",
+                      "example":"2011-08-29T00:00:00.000Z"
+                    },
+                    "rate":{
+                      "type":"string",
+                      "example":1
+                    },
+                    "cover":{
+                      "type":"string",
+                      "example":"http://localhost:5001/images/56c645cb-0a56-4ce3-b24d-ea0e84911ef5.jpeg"
+                    },"artists":{"type":"array","items":{"type":"string","example":"Flo Rida"}}
+                  }
+                  }
+            }}}
+    }
+  },"/api/gettop10artists": {
+      "get": {
+        "tags": [
+          "Artists"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          { "name": "Authorization", "required": true,"in": "header", "type": "string", "description": "JWT token which will be received from /api/login" }
+        ],
+        "responses": {
+          "200": {
+            "description": "TOP 10 Artists unordered",
+            "schema": {
+                  "type" : "array",
+                  "items": {
+                  "type": "object",
+                  "properties":{
+                    "id":{
+                      "type":"number",
+                      "example":1
+                    },
+                    "name":{
+                      "type":"string",
+                      "example":"Martin Garix"
+                    },
+                    "dob":{
+                      "type":"string",
+                      "example":"1953-07-11T00:00:00.000Z"
+                    },
+                    "bio":{
+                      "type":"string",
+                      "example":"artists bio data"
+                    },
+                    "songs":{"type":"array","items":{"type":"string","example":"Animals"}}
+                  }
+                  }
+            }}}
+    }
+  },"/api/addartist": {
+      "post": {
+        "tags": [
+          "Artists"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],"parameters": [{ "name": "Authorization", "required": true,"in": "header", "type": "string", "description": "JWT token which will be received from /api/login" },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+             "type":"object",
+             "required": [
+              "email","password"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "abc@yourdomain.com"
+              },
+              "dob":{
+                "type": "string",
+                "example":"2022-07-11T18:25:33.084Z"
+              },
+              "bio":{
+                "type": "string",
+                "example":"I am what i am..."
+              }
+            }
+          }}
+        ]
+        ,
+        "responses": {
+          "200": {
+            "description": "Artist Added successfully",
+            "schema":{
+              "type":"string",
+              "example":"Artist Added successfully"
+            }
+          },
+          "400": {
+            "description": "Error Details",
+            "schema":{
+              "type":"string",
+              "example":"form input error details"
+            }
+          }
+        }
+      }
+    },
+    "/api/getuser": {
+      "get": {
+        "tags": [
+          "Artists"
+        ],
+        "summary": "Get detail data from specifed device for a sertain interval",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          { "name": "Authorization", "required": true,"in": "header", "type": "string", "description": "JWT token which will be received from /api/auth/login" }
+        ],
+        "responses": {
+          "200": {
+            "in": "body",
+            "name": "body",
+            "schema": {
+             "type":"opject",
+              "properties":{
+  "message":{ "type":"string",
+  "example":"Success"},
+  "token": {"type":"string","example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IlN1YmhhbSBTYWRodWtoYW4iLCJpYXQiOjE2NTc1Njg0MDcsImV4cCI6MTY1NzYwNDQwN30.Qf0nFTDh4zrE2BCSzAPirR2AurLWg7bHK0Ar__f2hDY"},
+  "name": {"type":"string","example":"Subham Sadhukhan"},
+  "email": {"type":"string","example":"subhamkumarsadhukhan@gmail.com"}
+}
+              }
+            }
+          }
+          }
+        ,
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+    }
+    }

@@ -3,6 +3,8 @@ const cors = require("cors");
 const passport = require("passport");
 require("dotenv/config");
 const routes = require("./routes/index");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
 const app = express();
 app.use(
   cors({
@@ -13,6 +15,9 @@ app.use(
 app.use(express.json());
 require("./dbSetup")();
 require("./passportConfig")(passport);
+// DOCUMENTATION
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// CONVER IMAGES
 app.use("/images/", express.static("uploads/images"));
 app.use(routes);
 app.use(function (error, request, response, next) {
