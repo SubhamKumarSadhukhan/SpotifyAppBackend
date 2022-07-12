@@ -16,11 +16,10 @@ async function initialize() {
       "CREATE TABLE IF NOT EXISTS songs_ratings(id SERIAL PRIMARY KEY,song_id INTEGER NOT NULL,user_id INTEGER NOT NULL,rate INTEGER NOT NULL)"
     );
     await db.none(
-      `CREATE OR REPLACE VIEW topsongs as select DISTINCT i.id,i.name,i.rate,i.date_of_release,CONCAT('${process.env.BACKEND_URI}',i.cover) as cover,(select array(select name from (select * from song where song_id =i.id) as k inner join artists on artist_id=artists.id)) artists from (SELECT songs.id,name,songs.date_of_release,songs.cover,coalesce(round(avg(rate)),0) as rate from songs_ratings right join songs on song_id=songs.id group by songs.id,songs.name order by rate desc limit 10) AS i left join song on i.id=song.song_id order by rate desc`
+      `CREATE OR REPLACE VIEW topsongs as select songs.id,name,date_of_release,CONCAT('${process.env.BACKEND_URI}',cover) as cover,(select array(select name from (select artist_id from song where song_id=songs.id) as artists_ids inner join artists on artist_id=artists.id)) as artists,coalesce(rate,0)as rate from (select round(avg(rate)) as rate,song_id from Songs_ratings group by song_id) as top_songs right join songs on song_id=songs.id order by rate desc limit 10`
     );
     await db.none(
-      "CREATE OR REPLACE VIEW topartists as select artists.id,name,dob,bio,(select array(select name from (select * from song where artist_id=artists.id)as j inner join songs on j.song_id=songs.id)) as songs from (select artist_id,avg(rate) as rate from song inner join songs_ratings on song.song_id=songs_ratings.song_id group by artist_id order by rate desc limit 10) as k right join artists on artist_id=artists.id limit 10"
+      "CREATE OR REPLACE VIEW topartists as select id,name,dob,(select array(select name from (select * from song where artist_id=top10artists.id) as sing_song left join songs on songs.id=sing_song.song_id))as songs from (select id,coalesce(rate,0)as rate,name,dob from (select avg(rate)as rate,song.artist_id from (select song_id,avg(rate)as rate from songs_ratings group by song_id) as average_songs_ratings inner join song on average_songs_ratings.song_id=song.song_id group by song.artist_id) as top_artists right join artists on top_artists.artist_id=artists.id order by rate desc limit 10) as top10artists"
     );
-
 }
 module.exports = initialize;

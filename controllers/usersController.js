@@ -42,10 +42,11 @@ module.exports = {
       const result = Joi.validate(req.body, schema);
       if (result.error)
         return res.status(400).send(result.error.details[0].message);
-      let data = await db.none(
-        "insert into artists(name,dob,bio)values($1,$2,$3)",
-        [req.body.name, req.body.dob, req.body.bio]
-      );
+      await db.none("insert into artists(name,dob,bio)values($1,$2,$3)", [
+        req.body.name,
+        req.body.dob,
+        req.body.bio,
+      ]);
       res.send("Artist Added successfully");
     } catch (error) {
       next(error);
